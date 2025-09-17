@@ -2943,6 +2943,13 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                         }
                                     } else if ((url.startsWith("tg:scanqr") || url.startsWith("tg://scanqr"))) {
                                         scanQr = true;
+                                    } else if ((url.startsWith("tg:meow") || url.startsWith("tg://meow"))) { // meow :3
+                                        AndroidUtilities.runOnUIThread(() -> {
+                                            if (!actionBarLayout.getFragmentStack().isEmpty()) {
+                                                BaseFragment fragment = actionBarLayout.getFragmentStack().get(actionBarLayout.getFragmentStack().size() - 1);
+                                                BulletinFactory.of(fragment).createSimpleBulletin(R.raw.contact_check, "meow :3").show();
+                                            }
+                                        });
                                     } else if ((url.startsWith("tg:addcontact") || url.startsWith("tg://addcontact"))) {
                                         url = url.replace("tg:addcontact", "tg://telegram.org").replace("tg://addcontact", "tg://telegram.org");
                                         data = Uri.parse(url);

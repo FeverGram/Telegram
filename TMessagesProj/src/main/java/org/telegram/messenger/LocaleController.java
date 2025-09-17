@@ -78,7 +78,13 @@ public class LocaleController {
                         lang = "en";
                     }
                     lang = lang.toLowerCase();
-                    formatterDay = createFormatter(lang.toLowerCase().equals("ar") || lang.toLowerCase().equals("ko") ? locale : Locale.US, is24HourFormat ? getStringInternal("formatterDay24H", R.string.formatterDay24H) : getStringInternal("formatterDay12H", R.string.formatterDay12H), is24HourFormat ? "HH:mm" : "h:mm a");
+                    String timeFormat;
+                    if (org.telegram.messenger.SharedConfig.showSecondsInTime) {
+                        timeFormat = is24HourFormat ? "HH:mm:ss" : "h:mm:ss a";
+                    } else {
+                        timeFormat = is24HourFormat ? "HH:mm" : "h:mm a";
+                    }
+                    formatterDay = createFormatter(lang.toLowerCase().equals("ar") || lang.toLowerCase().equals("ko") ? locale : Locale.US, timeFormat, timeFormat);
                 }
             }
         }
@@ -96,7 +102,13 @@ public class LocaleController {
                         lang = "en";
                     }
                     lang = lang.toLowerCase();
-                    formatterConstDay = createFormatter(lang.toLowerCase().equals("ar") || lang.toLowerCase().equals("ko") ? locale : Locale.US, is24HourFormat ? "HH:mm" : "h:mm a", is24HourFormat ? "HH:mm" : "h:mm a");
+                    String constTimeFormat;
+                    if (org.telegram.messenger.SharedConfig.showSecondsInTime) {
+                        constTimeFormat = is24HourFormat ? "HH:mm:ss" : "h:mm:ss a";
+                    } else {
+                        constTimeFormat = is24HourFormat ? "HH:mm" : "h:mm a";
+                    }
+                    formatterConstDay = createFormatter(lang.toLowerCase().equals("ar") || lang.toLowerCase().equals("ko") ? locale : Locale.US, constTimeFormat, constTimeFormat);
                 }
             }
         }
@@ -174,7 +186,13 @@ public class LocaleController {
             synchronized (this) {
                 if (formatterStats == null) {
                     final Locale locale = currentLocale == null ? Locale.getDefault() : currentLocale;
-                    formatterStats = createFormatter(locale, is24HourFormat ? getStringInternal("formatterStats24H", R.string.formatterStats24H) : getStringInternal("formatterStats12H", R.string.formatterStats12H), is24HourFormat ? "MMM dd yyyy, HH:mm" : "MMM dd yyyy, h:mm a");
+                    String statsTimeFormat;
+                    if (org.telegram.messenger.SharedConfig.showSecondsInTime) {
+                        statsTimeFormat = is24HourFormat ? "MMM dd yyyy, HH:mm:ss" : "MMM dd yyyy, h:mm:ss a";
+                    } else {
+                        statsTimeFormat = is24HourFormat ? "MMM dd yyyy, HH:mm" : "MMM dd yyyy, h:mm a";
+                    }
+                    formatterStats = createFormatter(locale, statsTimeFormat, statsTimeFormat);
                 }
             }
         }
@@ -187,7 +205,13 @@ public class LocaleController {
             synchronized (this) {
                 if (formatterBannedUntil == null) {
                     final Locale locale = currentLocale == null ? Locale.getDefault() : currentLocale;
-                    formatterBannedUntil = createFormatter(locale, is24HourFormat ? getStringInternal("formatterBannedUntil24H", R.string.formatterBannedUntil24H) : getStringInternal("formatterBannedUntil12H", R.string.formatterBannedUntil12H), is24HourFormat ? "MMM dd yyyy, HH:mm" : "MMM dd yyyy, h:mm a");
+                    String bannedTimeFormat;
+                    if (org.telegram.messenger.SharedConfig.showSecondsInTime) {
+                        bannedTimeFormat = is24HourFormat ? "MMM dd yyyy, HH:mm:ss" : "MMM dd yyyy, h:mm:ss a";
+                    } else {
+                        bannedTimeFormat = is24HourFormat ? "MMM dd yyyy, HH:mm" : "MMM dd yyyy, h:mm a";
+                    }
+                    formatterBannedUntil = createFormatter(locale, bannedTimeFormat, bannedTimeFormat);
                 }
             }
         }
@@ -200,7 +224,13 @@ public class LocaleController {
             synchronized (this) {
                 if (formatterBannedUntilThisYear == null) {
                     final Locale locale = currentLocale == null ? Locale.getDefault() : currentLocale;
-                    formatterBannedUntilThisYear = createFormatter(locale, is24HourFormat ? getStringInternal("formatterBannedUntilThisYear24H", R.string.formatterBannedUntilThisYear24H) : getStringInternal("formatterBannedUntilThisYear12H", R.string.formatterBannedUntilThisYear12H), is24HourFormat ? "MMM dd, HH:mm" : "MMM dd, h:mm a");
+                    String bannedThisYearTimeFormat;
+                    if (org.telegram.messenger.SharedConfig.showSecondsInTime) {
+                        bannedThisYearTimeFormat = is24HourFormat ? "MMM dd, HH:mm:ss" : "MMM dd, h:mm:ss a";
+                    } else {
+                        bannedThisYearTimeFormat = is24HourFormat ? "MMM dd, HH:mm" : "MMM dd, h:mm a";
+                    }
+                    formatterBannedUntilThisYear = createFormatter(locale, bannedThisYearTimeFormat, bannedThisYearTimeFormat);
                 }
             }
         }
@@ -2794,6 +2824,13 @@ public class LocaleController {
     }
 
     public static String formatShortNumber(int number, int[] rounded) {
+        if (org.telegram.messenger.SharedConfig.disableCountRounding) {
+            if (rounded != null) {
+                rounded[0] = number;
+            }
+            return String.format(Locale.US, "%d", number);
+        }
+        
         StringBuilder K = new StringBuilder();
         int lastDec = 0;
         int KCount = 0;

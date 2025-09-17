@@ -1,6 +1,8 @@
 package org.telegram.ui;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +40,11 @@ public class FeverGramSettingsActivity extends BaseFragment {
     private int headerRow;
     private int disableAdsRow;
     private int adsInfoRow;
+    private int disableCountRoundingRow;
+    private int showSecondsInTimeRow;
+    private int interfaceHeaderRow;
+    private int interfaceInfoRow;
+    private int channelRow;
 
     @Override
     public boolean onFragmentCreate() {
@@ -77,6 +84,27 @@ public class FeverGramSettingsActivity extends BaseFragment {
                 SharedConfig.saveConfig();
                 
                 AlertsCreator.showSimpleToast(FeverGramSettingsActivity.this, SharedConfig.disableAds ? "Ads disabled" : "Ads enabled");
+            } else if (position == disableCountRoundingRow) {
+                TextCheckCell cell = (TextCheckCell) view;
+                cell.setChecked(!cell.isChecked());
+                
+                SharedConfig.disableCountRounding = cell.isChecked();
+                SharedConfig.saveConfig();
+            } else if (position == showSecondsInTimeRow) {
+                TextCheckCell cell = (TextCheckCell) view;
+                cell.setChecked(!cell.isChecked());
+                
+                SharedConfig.showSecondsInTime = cell.isChecked();
+                SharedConfig.saveConfig();
+                
+                LocaleController.getInstance().recreateFormatters();
+            } else if (position == channelRow) {
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/fevergramoffc"));
+                    getParentActivity().startActivity(intent);
+                } catch (Exception e) {
+                    
+                }
             }
         });
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
@@ -92,6 +120,17 @@ public class FeverGramSettingsActivity extends BaseFragment {
         rowCounts.add(0);
         adsInfoRow = rowCounts.size();
         rowCounts.add(0);
+        
+        interfaceHeaderRow = rowCounts.size();
+        rowCounts.add(0);
+        disableCountRoundingRow = rowCounts.size();
+        rowCounts.add(0);
+        showSecondsInTimeRow = rowCounts.size();
+        rowCounts.add(0);
+        interfaceInfoRow = rowCounts.size();
+        rowCounts.add(0);
+        channelRow = rowCounts.size();
+        rowCounts.add(0);
     }
 
     private class ListAdapter extends RecyclerListView.SelectionAdapter {
@@ -105,12 +144,12 @@ public class FeverGramSettingsActivity extends BaseFragment {
         @Override
         public boolean isEnabled(RecyclerView.ViewHolder holder) {
             int position = holder.getAdapterPosition();
-            return position == disableAdsRow;
+            return position == disableAdsRow || position == disableCountRoundingRow || position == showSecondsInTimeRow || position == channelRow;
         }
 
         @Override
         public int getItemCount() {
-            return 3;
+            return 8;
         }
 
         @Override
@@ -126,6 +165,9 @@ public class FeverGramSettingsActivity extends BaseFragment {
                 case 2:
                     view = new TextInfoPrivacyCell(context);
                     break;
+                case 3:
+                    view = new TextCell(context);
+                    break;
                 default:
                     view = new TextCell(context);
                     break;
@@ -140,18 +182,32 @@ public class FeverGramSettingsActivity extends BaseFragment {
                     HeaderCell headerCell = (HeaderCell) holder.itemView;
                     if (position == headerRow) {
                         headerCell.setText("FeverGram");
+                    } else if (position == interfaceHeaderRow) {
+                        headerCell.setText("Interface");
                     }
                     break;
                 case 1:
                     TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
                     if (position == disableAdsRow) {
                         textCheckCell.setTextAndCheck("Disable ads", SharedConfig.disableAds, false);
+                    } else if (position == disableCountRoundingRow) {
+                        textCheckCell.setTextAndCheck("Disable count rounding", SharedConfig.disableCountRounding, true);
+                    } else if (position == showSecondsInTimeRow) {
+                        textCheckCell.setTextAndCheck("Show seconds in time", SharedConfig.showSecondsInTime, false);
+                    }
+                    break;
+                case 3:
+                    TextCell textCell = (TextCell) holder.itemView;
+                    if (position == channelRow) {
+                        textCell.setText("Our OFFICIAL tg channel", false);
                     }
                     break;
                 case 2:
                     TextInfoPrivacyCell textInfoPrivacyCell = (TextInfoPrivacyCell) holder.itemView;
                     if (position == adsInfoRow) {
                         textInfoPrivacyCell.setText("Disable ads in channels. Works for all users, not just Premium. (how long we've been waiting for this)");
+                    } else if (position == interfaceInfoRow) {
+                        textInfoPrivacyCell.setText("Interface settings for Telegram");
                     }
                     break;
             }
@@ -159,12 +215,14 @@ public class FeverGramSettingsActivity extends BaseFragment {
 
         @Override
         public int getItemViewType(int position) {
-            if (position == headerRow) {
+            if (position == headerRow || position == interfaceHeaderRow) {
                 return 0;
-            } else if (position == disableAdsRow) {
+            } else if (position == disableAdsRow || position == disableCountRoundingRow || position == showSecondsInTimeRow) {
                 return 1;
-            } else if (position == adsInfoRow) {
+            } else if (position == adsInfoRow || position == interfaceInfoRow) {
                 return 2;
+            } else if (position == channelRow) {
+                return 3;
             }
             return 0;
         }
