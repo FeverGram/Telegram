@@ -56,10 +56,10 @@ jobs:
       - name: Build
         run: |
           chmod +x ./gradlew
-          ./gradlew --no-daemon :TMessagesProj_App:bundleBundleAfat_SDK23Release
-          ./gradlew --no-daemon :TMessagesProj_App:bundleBundleAfatRelease
-          ./gradlew --no-daemon :TMessagesProj_App:assembleAfatStandalone
-          ./gradlew --no-daemon :TMessagesProj_App:assembleAfatRelease
+          ./gradlew --no-daemon -PdisableGoogleServices=true :TMessagesProj_App:bundleBundleAfat_SDK23Release
+          ./gradlew --no-daemon -PdisableGoogleServices=true :TMessagesProj_App:bundleBundleAfatRelease
+          ./gradlew --no-daemon -PdisableGoogleServices=true :TMessagesProj_App:assembleAfatStandalone
+          ./gradlew --no-daemon -PdisableGoogleServices=true :TMessagesProj_App:assembleAfatRelease
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4

@@ -196,4 +196,6 @@ android {
     }
 }
 
-apply plugin: 'com.google.gms.google-services'
+if (project.findProperty('disableGoogleServices') != 'true') {
+    apply plugin: 'com.google.gms.google-services'
+}
