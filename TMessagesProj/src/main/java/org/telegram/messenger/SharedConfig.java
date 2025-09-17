@@ -347,6 +347,7 @@ public class SharedConfig {
     public static boolean multipleReactionsPromoShowed;
 
     public static boolean translateChats = true;
+    public static boolean disableAds = false;
 
     public static boolean isFloatingDebugActive;
     public static LiteMode liteMode;
@@ -485,6 +486,7 @@ public class SharedConfig {
                 editor.putBoolean("hasEmailLogin", hasEmailLogin);
                 editor.putBoolean("floatingDebugActive", isFloatingDebugActive);
                 editor.putBoolean("record_via_sco", recordViaSco);
+                editor.putBoolean("disableAds", disableAds);
                 editor.apply();
             } catch (Exception e) {
                 FileLog.e(e);
@@ -626,6 +628,7 @@ public class SharedConfig {
             sortContactsByName = preferences.getBoolean("sortContactsByName", false);
             sortFilesByName = preferences.getBoolean("sortFilesByName", false);
             noSoundHintShowed = preferences.getBoolean("noSoundHintShowed", false);
+            disableAds = preferences.getBoolean("disableAds", false);
             directShareHash = preferences.getString("directShareHash2", null);
             useThreeLinesLayout = preferences.getBoolean("useThreeLinesLayout", false);
             archiveHidden = preferences.getBoolean("archiveHidden", false);

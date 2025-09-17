@@ -18,7 +18,11 @@ import org.telegram.ui.ActionBar.ThemeDescription;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
 import org.telegram.ui.Cells.TextCell;
+import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
+import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.SharedConfig;
+import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 
@@ -32,7 +36,8 @@ public class FeverGramSettingsActivity extends BaseFragment {
     private LinearLayoutManager layoutManager;
 
     private int headerRow;
-    private int infoRow;
+    private int disableAdsRow;
+    private int adsInfoRow;
 
     @Override
     public boolean onFragmentCreate() {
@@ -63,6 +68,17 @@ public class FeverGramSettingsActivity extends BaseFragment {
         listView.setVerticalScrollBarEnabled(false);
         listView.setLayoutManager(layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         listView.setAdapter(listAdapter = new ListAdapter(context));
+        listView.setOnItemClickListener((view, position) -> {
+            if (position == disableAdsRow) {
+                TextCheckCell cell = (TextCheckCell) view;
+                cell.setChecked(!cell.isChecked());
+                
+                SharedConfig.disableAds = cell.isChecked();
+                SharedConfig.saveConfig();
+                
+                AlertsCreator.showSimpleToast(FeverGramSettingsActivity.this, SharedConfig.disableAds ? "Ads disabled" : "Ads enabled");
+            }
+        });
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
         return fragmentView;
@@ -72,7 +88,9 @@ public class FeverGramSettingsActivity extends BaseFragment {
         ArrayList<Integer> rowCounts = new ArrayList<>();
         headerRow = rowCounts.size();
         rowCounts.add(0);
-        infoRow = rowCounts.size();
+        disableAdsRow = rowCounts.size();
+        rowCounts.add(0);
+        adsInfoRow = rowCounts.size();
         rowCounts.add(0);
     }
 
@@ -86,12 +104,13 @@ public class FeverGramSettingsActivity extends BaseFragment {
 
         @Override
         public boolean isEnabled(RecyclerView.ViewHolder holder) {
-            return false;
+            int position = holder.getAdapterPosition();
+            return position == disableAdsRow;
         }
 
         @Override
         public int getItemCount() {
-            return 2;
+            return 3;
         }
 
         @Override
@@ -102,6 +121,9 @@ public class FeverGramSettingsActivity extends BaseFragment {
                     view = new HeaderCell(context);
                     break;
                 case 1:
+                    view = new TextCheckCell(context);
+                    break;
+                case 2:
                     view = new TextInfoPrivacyCell(context);
                     break;
                 default:
@@ -121,9 +143,15 @@ public class FeverGramSettingsActivity extends BaseFragment {
                     }
                     break;
                 case 1:
+                    TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
+                    if (position == disableAdsRow) {
+                        textCheckCell.setTextAndCheck("Disable ads", SharedConfig.disableAds, false);
+                    }
+                    break;
+                case 2:
                     TextInfoPrivacyCell textInfoPrivacyCell = (TextInfoPrivacyCell) holder.itemView;
-                    if (position == infoRow) {
-                        textInfoPrivacyCell.setText("Fevergram will be here");
+                    if (position == adsInfoRow) {
+                        textInfoPrivacyCell.setText("Disable ads in channels. Works for all users, not just Premium. (how long we've been waiting for this)");
                     }
                     break;
             }
@@ -133,8 +161,10 @@ public class FeverGramSettingsActivity extends BaseFragment {
         public int getItemViewType(int position) {
             if (position == headerRow) {
                 return 0;
-            } else if (position == infoRow) {
+            } else if (position == disableAdsRow) {
                 return 1;
+            } else if (position == adsInfoRow) {
+                return 2;
             }
             return 0;
         }
@@ -143,7 +173,7 @@ public class FeverGramSettingsActivity extends BaseFragment {
     @Override
     public ArrayList<ThemeDescription> getThemeDescriptions() {
         ArrayList<ThemeDescription> themeDescriptions = new ArrayList<>();
-        themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_CELLBACKGROUNDCOLOR, new Class[]{TextCell.class}, null, null, null, Theme.key_windowBackgroundWhite));
+        themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_CELLBACKGROUNDCOLOR, new Class[]{TextCell.class, TextCheckCell.class}, null, null, null, Theme.key_windowBackgroundWhite));
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundGray));
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
