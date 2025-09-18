@@ -3329,10 +3329,18 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             } else {
                 statusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(null, dp(26));
                 statusDrawable.center = true;
-                if (BuildVars.DEBUG_VERSION) {
+                String customAppName = org.telegram.messenger.MessagesController.getMainSettings(currentAccount).getString("FG_AppName", null);
+                if (customAppName != null && !customAppName.isEmpty()) {
+                    actionBar.setTitle(customAppName, statusDrawable);
+                } else if (BuildVars.DEBUG_VERSION) {
                     actionBar.setTitle(getString(R.string.AppNameBeta), statusDrawable);
                 } else {
                     actionBar.setTitle(getString(R.string.AppName), statusDrawable);
+                }
+                if (org.telegram.messenger.SharedConfig.centerTitle) {
+                    statusDrawable.center = true;
+                } else {
+                    statusDrawable.center = false;
                 }
                 updateStatus(UserConfig.getInstance(currentAccount).getCurrentUser(), false);
             }

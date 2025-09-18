@@ -17,6 +17,7 @@
 #include <atomic>
 #include <unordered_set>
 #include "Defines.h"
+void tgnet_set_packets_filters(bool disableTyping, bool disableOnline);
 
 #ifdef ANDROID
 #include <jni.h>

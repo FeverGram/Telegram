@@ -33,6 +33,15 @@
 #include "Config.h"
 #include "ProxyCheckInfo.h"
 #include "Handshake.h"
+#include <atomic>
+
+static std::atomic<bool> g_disableTypingPackets{false};
+static std::atomic<bool> g_disableOnlinePackets{false};
+
+void tgnet_set_packets_filters(bool disableTyping, bool disableOnline) {
+    g_disableTypingPackets.store(disableTyping);
+    g_disableOnlinePackets.store(disableOnline);
+}
 
 #ifdef ANDROID
 #include <jni.h>
@@ -1942,6 +1951,49 @@ void ConnectionsManager::sendRequest(TLObject *object, onCompleteFunc onComplete
     scheduleTask([&, requestToken, object, onComplete, onQuickAck, onWriteToSocket, onClear, flags, datacenterId, connectionType, immediate] {
         if (LOGS_ENABLED) DEBUG_D("send request %p - %s", object, typeid(*object).name());
         auto request = new Request(instanceNum, requestToken, connectionType, flags, datacenterId, onComplete, onQuickAck, onWriteToSocket, onClear);
+        if (g_disableTypingPackets.load()) {
+            auto api = dynamic_cast<TL_api_request*>(object);
+            if (api && api->request) {
+                bool err = false;
+                uint32_t pos = api->request->position();
+                uint32_t ctor = api->request->readUint32(&err);
+                api->request->position(pos);
+                if (!err && ctor == 0x58943ee2) {
+                    if (LOGS_ENABLED) DEBUG_D("typing packet blocked (native)");
+                    if (onClear) onClear();
+                    delete request;
+                    return;
+                }
+            }
+        }
+        if (g_disableOnlinePackets.load()) {
+            auto api = dynamic_cast<TL_api_request*>(object);
+            if (api && api->request) {
+                bool err = false;
+                uint32_t pos = api->request->position();
+                uint32_t ctor = api->request->readUint32(&err);
+                if (!err && ctor == 0x6628562c) {
+                    // Peek TL bool
+                    uint32_t boolMagic = api->request->readUint32(&err);
+                    api->request->position(pos);
+                    if (!err) {
+                        const uint32_t TL_BOOL_TRUE = 0x997275b5;
+                        const uint32_t TL_BOOL_FALSE = 0xbc799737;
+                        bool offline = (boolMagic == TL_BOOL_TRUE);
+                        if (!offline) {
+                            if (LOGS_ENABLED) DEBUG_D("online packet blocked (native)");
+                            if (onClear) onClear();
+                            delete request;
+                            return;
+                        }
+                    } else {
+                        api->request->position(pos);
+                    }
+                } else {
+                    api->request->position(pos);
+                }
+            }
+        }
         request->rawRequest = object;
         request->rpcRequest = wrapInLayer(object, getDatacenterWithId(datacenterId), request);
         if (LOGS_ENABLED) DEBUG_D("send request wrapped %p - %s", request->rpcRequest.get(), typeid(*(request->rpcRequest.get())).name());

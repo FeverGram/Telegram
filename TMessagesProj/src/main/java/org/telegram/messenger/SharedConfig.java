@@ -352,6 +352,9 @@ public class SharedConfig {
     public static boolean showSecondsInTime = false;
     public static boolean disableTypingPackets = false;
     public static boolean disableOnlinePackets = false;
+    public static boolean disableReadPackets = false;
+    public static boolean autoOfflineAfterOnline = false;
+    public static boolean centerTitle = true;
 
     public static boolean isFloatingDebugActive;
     public static LiteMode liteMode;
@@ -495,6 +498,9 @@ public class SharedConfig {
                 editor.putBoolean("showSecondsInTime", showSecondsInTime);
                 editor.putBoolean("disableTypingPackets", disableTypingPackets);
                 editor.putBoolean("disableOnlinePackets", disableOnlinePackets);
+                editor.putBoolean("disableReadPackets", disableReadPackets);
+                editor.putBoolean("autoOfflineAfterOnline", autoOfflineAfterOnline);
+                editor.putBoolean("centerTitle", centerTitle);
                 editor.apply();
             } catch (Exception e) {
                 FileLog.e(e);
@@ -641,6 +647,9 @@ public class SharedConfig {
             showSecondsInTime = preferences.getBoolean("showSecondsInTime", false);
             disableTypingPackets = preferences.getBoolean("disableTypingPackets", false);
             disableOnlinePackets = preferences.getBoolean("disableOnlinePackets", false);
+            disableReadPackets = preferences.getBoolean("disableReadPackets", false);
+            autoOfflineAfterOnline = preferences.getBoolean("autoOfflineAfterOnline", false);
+            centerTitle = preferences.getBoolean("centerTitle", true);
             directShareHash = preferences.getString("directShareHash2", null);
             useThreeLinesLayout = preferences.getBoolean("useThreeLinesLayout", false);
             archiveHidden = preferences.getBoolean("archiveHidden", false);

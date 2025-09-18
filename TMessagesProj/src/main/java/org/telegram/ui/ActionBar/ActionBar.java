@@ -361,7 +361,7 @@ public class ActionBar extends FrameLayout {
             return;
         }
         subtitleTextView = new SimpleTextView(getContext());
-        subtitleTextView.setGravity(Gravity.LEFT);
+        subtitleTextView.setGravity(org.telegram.messenger.SharedConfig.centerTitle ? Gravity.CENTER : Gravity.LEFT);
         subtitleTextView.setVisibility(GONE);
         subtitleTextView.setTextColor(getThemedColor(Theme.key_actionBarDefaultSubtitle));
         addView(subtitleTextView, 0, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP));
@@ -372,7 +372,7 @@ public class ActionBar extends FrameLayout {
             return;
         }
         additionalSubtitleTextView = new SimpleTextView(getContext());
-        additionalSubtitleTextView.setGravity(Gravity.LEFT);
+        additionalSubtitleTextView.setGravity(org.telegram.messenger.SharedConfig.centerTitle ? Gravity.CENTER : Gravity.LEFT);
         additionalSubtitleTextView.setVisibility(GONE);
         additionalSubtitleTextView.setTextColor(getThemedColor(Theme.key_actionBarDefaultSubtitle));
         addView(additionalSubtitleTextView, 0, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP));
@@ -414,7 +414,7 @@ public class ActionBar extends FrameLayout {
             return;
         }
         titleTextView[i] = new SimpleTextView(getContext());
-        titleTextView[i].setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+        titleTextView[i].setGravity(org.telegram.messenger.SharedConfig.centerTitle ? Gravity.CENTER : Gravity.LEFT | Gravity.CENTER_VERTICAL);
         if (titleColorToSet != 0) {
             titleTextView[i].setTextColor(titleColorToSet);
         } else {
@@ -434,6 +434,21 @@ public class ActionBar extends FrameLayout {
 
     public void setTitleRightMargin(int value) {
         titleRightMargin = value;
+    }
+
+    public void updateTitleGravity() {
+        int gravity = org.telegram.messenger.SharedConfig.centerTitle ? Gravity.CENTER : Gravity.LEFT | Gravity.CENTER_VERTICAL;
+        for (int i = 0; i < titleTextView.length; i++) {
+            if (titleTextView[i] != null) {
+                titleTextView[i].setGravity(gravity);
+            }
+        }
+        if (subtitleTextView != null) {
+            subtitleTextView.setGravity(org.telegram.messenger.SharedConfig.centerTitle ? Gravity.CENTER : Gravity.LEFT);
+        }
+        if (additionalSubtitleTextView != null) {
+            additionalSubtitleTextView.setGravity(org.telegram.messenger.SharedConfig.centerTitle ? Gravity.CENTER : Gravity.LEFT);
+        }
     }
 
     public void setTitle(CharSequence value) {

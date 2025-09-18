@@ -13582,7 +13582,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     } else if (position == chatRow) {
                         textCell.setTextAndIcon(LocaleController.getString(R.string.ChatSettings), R.drawable.msg2_discussion, true);
                     } else if (position == fevergramSettingsRow) {
-                        textCell.setTextAndIcon(LocaleController.getString(R.string.FeverGramSettings), R.drawable.msg2_data, true);
+                        textCell.setTextAndIcon(LocaleController.getString(R.string.FeverGramSettings), R.drawable.msg2_reactions2, true);
                     } else if (position == filtersRow) {
                         textCell.setTextAndIcon(LocaleController.getString(R.string.Filters), R.drawable.msg2_folder, true);
                     } else if (position == stickersRow) {

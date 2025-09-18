@@ -1435,6 +1435,12 @@ public class LocaleController {
         if (key == null) {
             resourcesCacheMap.put(res, key = ApplicationLoader.applicationContext.getResources().getResourceEntryName(res));
         }
+        if (res == R.string.AppName || res == R.string.AppNameBeta) {
+            String customAppName = MessagesController.getMainSettings(UserConfig.selectedAccount).getString("FG_AppName", null);
+            if (customAppName != null && !customAppName.isEmpty()) {
+                return customAppName;
+            }
+        }
         return getString(key, res);
     }
 

@@ -360,6 +360,61 @@ public class ConnectionsManager extends BaseController {
         if (BuildVars.LOGS_ENABLED) {
             FileLog.d("send request " + object + " with token = " + requestToken);
         }
+        if (org.telegram.messenger.SharedConfig.disableOnlinePackets && object instanceof org.telegram.tgnet.tl.TL_account.updateStatus) {
+            ((org.telegram.tgnet.tl.TL_account.updateStatus) object).offline = true;
+        }
+        if (org.telegram.messenger.SharedConfig.disableReadPackets && (
+                object instanceof TLRPC.TL_messages_readHistory ||
+                object instanceof TLRPC.TL_messages_readEncryptedHistory ||
+                object instanceof TLRPC.TL_messages_readDiscussion ||
+                object instanceof TLRPC.TL_messages_readMessageContents ||
+                object instanceof TLRPC.TL_channels_readHistory ||
+                object instanceof TLRPC.TL_channels_readMessageContents ||
+                object instanceof TLRPC.TL_messages_readSavedHistory ||
+                object instanceof TLRPC.TL_messages_readMentions)) {
+            try {
+                if (onComplete != null) {
+                    TLRPC.TL_messages_affectedMessages fake = new TLRPC.TL_messages_affectedMessages();
+                    fake.pts = -1;
+                    fake.pts_count = 0;
+                    onComplete.run(fake, null);
+                }
+                try {
+                    long dialogId = 0;
+                    int maxId = 0;
+                    if (object instanceof TLRPC.TL_messages_readHistory) {
+                        TLRPC.TL_messages_readHistory req = (TLRPC.TL_messages_readHistory) object;
+                        maxId = req.max_id;
+                        if (req.peer instanceof TLRPC.TL_inputPeerUser) {
+                            dialogId = ((TLRPC.TL_inputPeerUser) req.peer).user_id;
+                        } else if (req.peer instanceof TLRPC.TL_inputPeerChat) {
+                            dialogId = -((TLRPC.TL_inputPeerChat) req.peer).chat_id;
+                        } else if (req.peer instanceof TLRPC.TL_inputPeerChannel) {
+                            dialogId = -((TLRPC.TL_inputPeerChannel) req.peer).channel_id;
+                        }
+                    } else if (object instanceof TLRPC.TL_channels_readHistory) {
+                        TLRPC.TL_channels_readHistory req = (TLRPC.TL_channels_readHistory) object;
+                        maxId = req.max_id;
+                        if (req.channel instanceof TLRPC.TL_inputChannel) {
+                            dialogId = -((TLRPC.TL_inputChannel) req.channel).channel_id;
+                        }
+                    }
+                    if (dialogId != 0 && maxId != 0) {
+                        final long did = dialogId;
+                        final int mid = maxId;
+                        org.telegram.messenger.AndroidUtilities.runOnUIThread(() -> {
+                            org.telegram.messenger.AccountInstance ai = org.telegram.messenger.AccountInstance.getInstance(currentAccount);
+                            ai.getMessagesStorage().processPendingRead(did, mid, 0, 0);
+                            ai.getNotificationsController().processReadMessages(null, did, 0, mid, false);
+                            ai.getNotificationCenter().postNotificationName(org.telegram.messenger.NotificationCenter.updateInterfaces, org.telegram.messenger.MessagesController.UPDATE_MASK_READ_DIALOG_MESSAGE);
+                        });
+                    }
+                } catch (Exception ignore) {}
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+            return;
+        }
         try {
             NativeByteBuffer buffer = new NativeByteBuffer(object.getObjectSize());
             object.serializeToStream(buffer);
@@ -971,6 +1026,7 @@ public class ConnectionsManager extends BaseController {
     public static native void native_failNotRunningRequest(int currentAccount, int token);
     public static native void native_receivedIntegrityCheckClassic(int currentAccount, int requestToken, String nonce, String token);
     public static native void native_receivedCaptchaResult(int currentAccount, int[] requestTokens, String token);
+    public static native void native_setPacketsFilters(int currentAccount, boolean disableTyping, boolean disableOnline);
     public static native boolean native_isGoodPrime(byte[] prime, int g);
 
     public static int generateClassGuid() {

@@ -9871,6 +9871,14 @@ public class MessagesController extends BaseController implements NotificationCe
                                 lastStatusUpdateTime = System.currentTimeMillis();
                                 offlineSent = false;
                                 statusSettingState = 0;
+                                if (SharedConfig.autoOfflineAfterOnline) {
+                                    AndroidUtilities.runOnUIThread(() -> {
+                                        TL_account.updateStatus off = new TL_account.updateStatus();
+                                        off.offline = true;
+                                        getConnectionsManager().sendRequest(off, (r2, e2) -> {});
+                                        offlineSent = true;
+                                    }, 300);
+                                }
                             } else {
                                 if (lastStatusUpdateTime != 0) {
                                     lastStatusUpdateTime += 5000;
@@ -9878,6 +9886,13 @@ public class MessagesController extends BaseController implements NotificationCe
                             }
                             statusRequest = 0;
                         });
+                        } else {
+                            if (BuildVars.LOGS_ENABLED) {
+                                FileLog.d("online packet blocked: set online -> force offline");
+                            }
+                            TL_account.updateStatus req = new TL_account.updateStatus();
+                            req.offline = true;
+                            getConnectionsManager().sendRequest(req, (response, error) -> {});
                         }
                     }
                 }
@@ -9899,6 +9914,14 @@ public class MessagesController extends BaseController implements NotificationCe
                     }
                     statusRequest = 0;
                 });
+                } else {
+                    // Even with disableOnlinePackets, allow sending offline to enforce status
+                    if (BuildVars.LOGS_ENABLED) {
+                        FileLog.d("online packet blocked: set offline (forcing)");
+                    }
+                    TL_account.updateStatus req = new TL_account.updateStatus();
+                    req.offline = true;
+                    getConnectionsManager().sendRequest(req, (response, error) -> {});
                 }
             }
 
@@ -10708,6 +10731,7 @@ public class MessagesController extends BaseController implements NotificationCe
 
     public boolean sendTyping(long dialogId, long threadMsgId, int action, String emojicon, int classGuid) {
         if (SharedConfig.disableTypingPackets) {
+            FileLog.d("typing packet blocked dialogId=" + dialogId);
             return false;
         }
         if (action < 0 || action >= sendingTypings.length || dialogId == 0) {
