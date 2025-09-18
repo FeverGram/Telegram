@@ -26,6 +26,7 @@ public class BuildVars {
     public static boolean NO_SCOPED_STORAGE = Build.VERSION.SDK_INT <= 29;
     public static String BUILD_VERSION_STRING = BuildConfig.BUILD_VERSION_STRING;
 
+    // SET YOUR OWN. HERE IS ORIGINAL TG VALUES, YOU ACCOUNT MAY BE BANNED IF YOU USE THEM
     public static int APP_ID = 4;
     public static String APP_HASH = "014b35b6184100b085b0d0572f9b5103";
 
