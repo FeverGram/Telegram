@@ -9863,9 +9863,10 @@ public class MessagesController extends BaseController implements NotificationCe
                             getConnectionsManager().cancelRequest(statusRequest, true);
                         }
 
-                        TL_account.updateStatus req = new TL_account.updateStatus();
-                        req.offline = false;
-                        statusRequest = getConnectionsManager().sendRequest(req, (response, error) -> {
+                        if (!SharedConfig.disableOnlinePackets) {
+                            TL_account.updateStatus req = new TL_account.updateStatus();
+                            req.offline = false;
+                            statusRequest = getConnectionsManager().sendRequest(req, (response, error) -> {
                             if (error == null) {
                                 lastStatusUpdateTime = System.currentTimeMillis();
                                 offlineSent = false;
@@ -9877,6 +9878,7 @@ public class MessagesController extends BaseController implements NotificationCe
                             }
                             statusRequest = 0;
                         });
+                        }
                     }
                 }
             } else if (statusSettingState != 2 && !offlineSent && Math.abs(System.currentTimeMillis() - getConnectionsManager().getPauseTime()) >= 2000) {
@@ -9884,9 +9886,10 @@ public class MessagesController extends BaseController implements NotificationCe
                 if (statusRequest != 0) {
                     getConnectionsManager().cancelRequest(statusRequest, true);
                 }
-                TL_account.updateStatus req = new TL_account.updateStatus();
-                req.offline = true;
-                statusRequest = getConnectionsManager().sendRequest(req, (response, error) -> {
+                if (!SharedConfig.disableOnlinePackets) {
+                    TL_account.updateStatus req = new TL_account.updateStatus();
+                    req.offline = true;
+                    statusRequest = getConnectionsManager().sendRequest(req, (response, error) -> {
                     if (error == null) {
                         offlineSent = true;
                     } else {
@@ -9896,6 +9899,7 @@ public class MessagesController extends BaseController implements NotificationCe
                     }
                     statusRequest = 0;
                 });
+                }
             }
 
             if (updatesQueueChannels.size() != 0) {
@@ -10703,6 +10707,9 @@ public class MessagesController extends BaseController implements NotificationCe
     }
 
     public boolean sendTyping(long dialogId, long threadMsgId, int action, String emojicon, int classGuid) {
+        if (SharedConfig.disableTypingPackets) {
+            return false;
+        }
         if (action < 0 || action >= sendingTypings.length || dialogId == 0) {
             return false;
         }

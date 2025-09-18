@@ -17,6 +17,7 @@ import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
+import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
 import org.telegram.ui.Cells.TextCell;
@@ -44,6 +45,10 @@ public class FeverGramSettingsActivity extends BaseFragment {
     private int showSecondsInTimeRow;
     private int interfaceHeaderRow;
     private int interfaceInfoRow;
+    private int tosBreakingHeaderRow;
+    private int disableTypingPacketsRow;
+    private int disableOnlinePacketsRow;
+    private int tosBreakingInfoRow;
     private int channelRow;
 
     @Override
@@ -98,12 +103,33 @@ public class FeverGramSettingsActivity extends BaseFragment {
                 SharedConfig.saveConfig();
                 
                 LocaleController.getInstance().recreateFormatters();
+            } else if (position == disableTypingPacketsRow) {
+                TextCheckCell cell = (TextCheckCell) view;
+                cell.setChecked(!cell.isChecked());
+                
+                SharedConfig.disableTypingPackets = cell.isChecked();
+                SharedConfig.saveConfig();
+            } else if (position == disableOnlinePacketsRow) {
+                TextCheckCell cell = (TextCheckCell) view;
+                cell.setChecked(!cell.isChecked());
+                
+                SharedConfig.disableOnlinePackets = cell.isChecked();
+                SharedConfig.saveConfig();
             } else if (position == channelRow) {
                 try {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/fevergramoffc"));
-                    getParentActivity().startActivity(intent);
+                    Bundle args = new Bundle();
+                    args.putLong("chat_id", 2964083732L);
+                    if (!presentFragment(new ChatActivity(args))) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/c/2964083732/1"));
+                        getParentActivity().startActivity(intent);
+                    }
                 } catch (Exception e) {
-                    
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/c/2964083732/1"));
+                        getParentActivity().startActivity(intent);
+                    } catch (Exception ex) {
+                        
+                    }
                 }
             }
         });
@@ -129,6 +155,15 @@ public class FeverGramSettingsActivity extends BaseFragment {
         rowCounts.add(0);
         interfaceInfoRow = rowCounts.size();
         rowCounts.add(0);
+        
+        tosBreakingHeaderRow = rowCounts.size();
+        rowCounts.add(0);
+        disableTypingPacketsRow = rowCounts.size();
+        rowCounts.add(0);
+        disableOnlinePacketsRow = rowCounts.size();
+        rowCounts.add(0);
+        tosBreakingInfoRow = rowCounts.size();
+        rowCounts.add(0);
         channelRow = rowCounts.size();
         rowCounts.add(0);
     }
@@ -144,12 +179,12 @@ public class FeverGramSettingsActivity extends BaseFragment {
         @Override
         public boolean isEnabled(RecyclerView.ViewHolder holder) {
             int position = holder.getAdapterPosition();
-            return position == disableAdsRow || position == disableCountRoundingRow || position == showSecondsInTimeRow || position == channelRow;
+            return position == disableAdsRow || position == disableCountRoundingRow || position == showSecondsInTimeRow || position == disableTypingPacketsRow || position == disableOnlinePacketsRow || position == channelRow;
         }
 
         @Override
         public int getItemCount() {
-            return 8;
+            return 12;
         }
 
         @Override
@@ -184,6 +219,8 @@ public class FeverGramSettingsActivity extends BaseFragment {
                         headerCell.setText("FeverGram");
                     } else if (position == interfaceHeaderRow) {
                         headerCell.setText("Interface");
+                    } else if (position == tosBreakingHeaderRow) {
+                        headerCell.setText("ToS Breaking Features");
                     }
                     break;
                 case 1:
@@ -193,13 +230,17 @@ public class FeverGramSettingsActivity extends BaseFragment {
                     } else if (position == disableCountRoundingRow) {
                         textCheckCell.setTextAndCheck("Disable count rounding", SharedConfig.disableCountRounding, true);
                     } else if (position == showSecondsInTimeRow) {
-                        textCheckCell.setTextAndCheck("Show seconds in time", SharedConfig.showSecondsInTime, false);
+                        textCheckCell.setTextAndCheck("Show seconds in time", SharedConfig.showSecondsInTime, true);
+                    } else if (position == disableTypingPacketsRow) {
+                        textCheckCell.setTextAndCheck("Disable typing packets", SharedConfig.disableTypingPackets, true);
+                    } else if (position == disableOnlinePacketsRow) {
+                        textCheckCell.setTextAndCheck("Disable online packets", SharedConfig.disableOnlinePackets, false);
                     }
                     break;
                 case 3:
                     TextCell textCell = (TextCell) holder.itemView;
                     if (position == channelRow) {
-                        textCell.setText("Our OFFICIAL tg channel", false);
+                        textCell.setText("OFFICIAL TG channel", false);
                     }
                     break;
                 case 2:
@@ -208,6 +249,8 @@ public class FeverGramSettingsActivity extends BaseFragment {
                         textInfoPrivacyCell.setText("Disable ads in channels. Works for all users, not just Premium. (how long we've been waiting for this)");
                     } else if (position == interfaceInfoRow) {
                         textInfoPrivacyCell.setText("Interface settings for Telegram");
+                    } else if (position == tosBreakingInfoRow) {
+                        textInfoPrivacyCell.setText("These features MAAYBE violate Telegram's Terms of Service.\n\nIm not responsible for your accounts :3");
                     }
                     break;
             }
@@ -215,11 +258,11 @@ public class FeverGramSettingsActivity extends BaseFragment {
 
         @Override
         public int getItemViewType(int position) {
-            if (position == headerRow || position == interfaceHeaderRow) {
+            if (position == headerRow || position == interfaceHeaderRow || position == tosBreakingHeaderRow) {
                 return 0;
-            } else if (position == disableAdsRow || position == disableCountRoundingRow || position == showSecondsInTimeRow) {
+            } else if (position == disableAdsRow || position == disableCountRoundingRow || position == showSecondsInTimeRow || position == disableTypingPacketsRow || position == disableOnlinePacketsRow) {
                 return 1;
-            } else if (position == adsInfoRow || position == interfaceInfoRow) {
+            } else if (position == adsInfoRow || position == interfaceInfoRow || position == tosBreakingInfoRow) {
                 return 2;
             } else if (position == channelRow) {
                 return 3;

@@ -350,6 +350,8 @@ public class SharedConfig {
     public static boolean disableAds = false;
     public static boolean disableCountRounding = false;
     public static boolean showSecondsInTime = false;
+    public static boolean disableTypingPackets = false;
+    public static boolean disableOnlinePackets = false;
 
     public static boolean isFloatingDebugActive;
     public static LiteMode liteMode;
@@ -491,6 +493,8 @@ public class SharedConfig {
                 editor.putBoolean("disableAds", disableAds);
                 editor.putBoolean("disableCountRounding", disableCountRounding);
                 editor.putBoolean("showSecondsInTime", showSecondsInTime);
+                editor.putBoolean("disableTypingPackets", disableTypingPackets);
+                editor.putBoolean("disableOnlinePackets", disableOnlinePackets);
                 editor.apply();
             } catch (Exception e) {
                 FileLog.e(e);
@@ -635,6 +639,8 @@ public class SharedConfig {
             disableAds = preferences.getBoolean("disableAds", false);
             disableCountRounding = preferences.getBoolean("disableCountRounding", false);
             showSecondsInTime = preferences.getBoolean("showSecondsInTime", false);
+            disableTypingPackets = preferences.getBoolean("disableTypingPackets", false);
+            disableOnlinePackets = preferences.getBoolean("disableOnlinePackets", false);
             directShareHash = preferences.getString("directShareHash2", null);
             useThreeLinesLayout = preferences.getBoolean("useThreeLinesLayout", false);
             archiveHidden = preferences.getBoolean("archiveHidden", false);
