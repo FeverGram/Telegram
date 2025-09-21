@@ -168,6 +168,7 @@
     <string name="DisableAds">Disable ads</string>
     <string name="DisableCountRounding">Disable count rounding</string>
     <string name="ShowSecondsInTime">Show seconds in time</string>
+    <string name="SyncTokyoTime">Sync Tokyo time in font preview</string>
     <string name="DisableTypingPackets">Disable typing packets</string>
     <string name="DisableOnlinePackets">Disable online packets</string>
     <string name="DisableReadPackets">Disable read packets</string>

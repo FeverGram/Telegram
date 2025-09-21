@@ -42,6 +42,8 @@ import org.telegram.ui.Components.MotionBackgroundDrawable;
 import org.telegram.ui.Components.Reactions.ReactionsEffectOverlay;
 import org.telegram.ui.Components.Reactions.ReactionsLayoutInBubble;
 import org.telegram.ui.Stories.recorder.StoryEntry;
+import org.telegram.messenger.TokyoTimeUtils;
+import org.telegram.messenger.SharedConfig;
 
 public class ThemePreviewMessagesCell extends LinearLayout {
 
@@ -210,7 +212,7 @@ public class ThemePreviewMessagesCell extends LinearLayout {
 
             message = new TLRPC.TL_message();
             if (type == 0) {
-                message.message = LocaleController.getString(R.string.FontSizePreviewLine2);
+                message.message = SharedConfig.syncTokyoTime ? TokyoTimeUtils.getTokyoTimeWithEmoji() : LocaleController.getString(R.string.FontSizePreviewLine2);
             } else {
                 String text = LocaleController.getString(R.string.NewThemePreviewLine3);
                 StringBuilder builder = new StringBuilder(text);
@@ -438,6 +440,17 @@ public class ThemePreviewMessagesCell extends LinearLayout {
 
     public ChatMessageCell[] getCells() {
         return cells;
+    }
+    
+    public void updateTokyoTime() {
+        if (type == 0 && cells.length > 1 && cells[1] != null) {
+            MessageObject messageObject = cells[1].getMessageObject();
+            if (messageObject != null) {
+                messageObject.message = SharedConfig.syncTokyoTime ? TokyoTimeUtils.getTokyoTimeWithEmoji() : LocaleController.getString(R.string.FontSizePreviewLine2);
+                messageObject.resetLayout();
+                cells[1].requestLayout();
+            }
+        }
     }
 
     @Override

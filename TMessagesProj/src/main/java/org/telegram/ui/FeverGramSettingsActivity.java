@@ -57,6 +57,7 @@ public class FeverGramSettingsActivity extends BaseFragment {
     private int interfaceSectionRow;
     private int disableCountRoundingRow;
     private int showSecondsInTimeRow;
+    private int syncTokyoTimeRow;
     private int customAppNameRow;
     private int centerTitleRow;
     private int interfaceSectionInfoRow;
@@ -130,6 +131,10 @@ public class FeverGramSettingsActivity extends BaseFragment {
                 SharedConfig.saveConfig();
                 ((TextCheckCell) view).setChecked(SharedConfig.showSecondsInTime);
                 LocaleController.getInstance().recreateFormatters();
+            } else if (position == syncTokyoTimeRow) {
+                SharedConfig.syncTokyoTime = !SharedConfig.syncTokyoTime;
+                SharedConfig.saveConfig();
+                ((TextCheckCell) view).setChecked(SharedConfig.syncTokyoTime);
             } else if (position == disableTypingPacketsRow) {
                  SharedConfig.disableTypingPackets = !SharedConfig.disableTypingPackets;
                  SharedConfig.saveConfig();
@@ -259,6 +264,7 @@ public class FeverGramSettingsActivity extends BaseFragment {
         interfaceSectionRow = rowCount++;
         disableCountRoundingRow = rowCount++;
         showSecondsInTimeRow = rowCount++;
+        syncTokyoTimeRow = rowCount++;
         customAppNameRow = rowCount++;
         centerTitleRow = rowCount++;
         interfaceSectionInfoRow = rowCount++;
@@ -297,7 +303,7 @@ public class FeverGramSettingsActivity extends BaseFragment {
         @Override
         public boolean isEnabled(RecyclerView.ViewHolder holder) {
             int position = holder.getAdapterPosition();
-             return position == disableAdsRow || position == disableCountRoundingRow || position == showSecondsInTimeRow || 
+             return position == disableAdsRow || position == disableCountRoundingRow || position == showSecondsInTimeRow || position == syncTokyoTimeRow ||
                     position == disableTypingPacketsRow || position == disableOnlinePacketsRow || position == disableReadPacketsRow || position == logsRow || 
                     position == channelRow || position == customAppNameRow || position == centerTitleRow || position == tosBreakingSectionRow;
         }
@@ -372,6 +378,8 @@ public class FeverGramSettingsActivity extends BaseFragment {
                         textCheckCell.setTextAndCheck(LocaleController.getString("DisableCountRounding", R.string.DisableCountRounding), SharedConfig.disableCountRounding, true);
                     } else if (position == showSecondsInTimeRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("ShowSecondsInTime", R.string.ShowSecondsInTime), SharedConfig.showSecondsInTime, true);
+                    } else if (position == syncTokyoTimeRow) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString("SyncTokyoTime", R.string.SyncTokyoTime), SharedConfig.syncTokyoTime, true);
                     } else if (position == disableTypingPacketsRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("DisableTypingPackets", R.string.DisableTypingPackets), SharedConfig.disableTypingPackets, true);
                     } else if (position == disableOnlinePacketsRow) {
@@ -459,7 +467,7 @@ public class FeverGramSettingsActivity extends BaseFragment {
         public int getItemViewType(int position) {
             if (position == adsSectionRow || position == interfaceSectionRow || position == debugSectionRow || position == versionSectionRow) {
                 return 0;
-            } else if (position == disableAdsRow || position == disableCountRoundingRow || position == showSecondsInTimeRow || 
+            } else if (position == disableAdsRow || position == disableCountRoundingRow || position == showSecondsInTimeRow || position == syncTokyoTimeRow ||
                        position == centerTitleRow) {
                 return 1;
             } else if (position == customAppNameRow) {

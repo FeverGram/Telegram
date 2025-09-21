@@ -330,6 +330,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 messagesCell.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
             }
+            messagesCell.updateTokyoTime();
             addView(messagesCell, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 0, 53, 0, 0));
         }
 
@@ -499,6 +500,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             RecyclerView.ViewHolder holder = listView.findViewHolderForAdapterPosition(textSizeRow);
             if (holder != null && holder.itemView instanceof TextSizeCell) {
                 TextSizeCell cell = (TextSizeCell) holder.itemView;
+                cell.messagesCell.updateTokyoTime();
                 ChatMessageCell[] cells = cell.messagesCell.getCells();
                 for (int a = 0; a < cells.length; a++) {
                     cells[a].getMessageObject().resetLayout();

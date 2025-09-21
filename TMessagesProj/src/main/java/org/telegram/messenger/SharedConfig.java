@@ -355,6 +355,7 @@ public class SharedConfig {
     public static boolean disableReadPackets = false;
     public static boolean autoOfflineAfterOnline = false;
     public static boolean centerTitle = true;
+    public static boolean syncTokyoTime = false;
 
     public static boolean isFloatingDebugActive;
     public static LiteMode liteMode;
@@ -501,6 +502,7 @@ public class SharedConfig {
                 editor.putBoolean("disableReadPackets", disableReadPackets);
                 editor.putBoolean("autoOfflineAfterOnline", autoOfflineAfterOnline);
                 editor.putBoolean("centerTitle", centerTitle);
+                editor.putBoolean("syncTokyoTime", syncTokyoTime);
                 editor.apply();
             } catch (Exception e) {
                 FileLog.e(e);
@@ -650,6 +652,7 @@ public class SharedConfig {
             disableReadPackets = preferences.getBoolean("disableReadPackets", false);
             autoOfflineAfterOnline = preferences.getBoolean("autoOfflineAfterOnline", false);
             centerTitle = preferences.getBoolean("centerTitle", true);
+            syncTokyoTime = preferences.getBoolean("syncTokyoTime", false);
             directShareHash = preferences.getString("directShareHash2", null);
             useThreeLinesLayout = preferences.getBoolean("useThreeLinesLayout", false);
             archiveHidden = preferences.getBoolean("archiveHidden", false);

@@ -292,4 +292,5 @@
     <string name="About">О программе</string>
     <string name="Version">Версия</string>
     <string name="DebugInfoText">Здесь находятся инструменты для отладки приложения.</string>
+    <string name="SyncTokyoTime">Синхронизировать время Токио в предпросмотре шрифта</string>
 </resources>
