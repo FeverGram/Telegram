@@ -446,7 +446,7 @@ public class ThemePreviewMessagesCell extends LinearLayout {
         if (type == 0 && cells.length > 1 && cells[1] != null) {
             MessageObject messageObject = cells[1].getMessageObject();
             if (messageObject != null) {
-                messageObject.message = SharedConfig.syncTokyoTime ? TokyoTimeUtils.getTokyoTimeWithEmoji() : LocaleController.getString(R.string.FontSizePreviewLine2);
+                messageObject.messageText = SharedConfig.syncTokyoTime ? TokyoTimeUtils.getTokyoTimeWithEmoji() : LocaleController.getString(R.string.FontSizePreviewLine2);
                 messageObject.resetLayout();
                 cells[1].requestLayout();
             }
