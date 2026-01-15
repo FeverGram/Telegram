@@ -28,6 +28,8 @@ public class BuildVars {
     public static String GIT_COMMIT_HASH = BuildConfig.GIT_COMMIT_HASH;
 
     // SET YOUR OWN. HERE IS ORIGINAL TG VALUES, YOU ACCOUNT MAY BE BANNED IF YOU USE THEM
+    // works only on official app ids, disable on your forks
+    public static boolean SUPPORTS_PASSKEYS = false;
     public static int APP_ID = 4;
     public static String APP_HASH = "014b35b6184100b085b0d0572f9b5103";
 
